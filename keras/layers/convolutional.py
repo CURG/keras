@@ -82,6 +82,7 @@ class Convolution1D(Layer):
         self.input_length = input_length
         if self.input_dim:
             kwargs['input_shape'] = (self.input_length, self.input_dim)
+            kwargs['lr_scale'] = [1,1]
         super(Convolution1D, self).__init__(**kwargs)
 
     def build(self):
@@ -177,7 +178,7 @@ class Convolution2D(Layer):
                  init='glorot_uniform', activation='linear', weights=None,
                  border_mode='valid', subsample=(1, 1),
                  W_regularizer=None, b_regularizer=None, activity_regularizer=None,
-                 W_constraint=None, b_constraint=None, **kwargs):
+                 W_constraint=None, b_constraint=None, lr_scale_w=1.0, lr_scale_b=1.0, layer_name="Convolution2D", **kwargs):
 
         if border_mode not in {'valid', 'full', 'same'}:
             raise Exception('Invalid border mode for Convolution2D:', border_mode)
@@ -198,6 +199,9 @@ class Convolution2D(Layer):
         self.constraints = [self.W_constraint, self.b_constraint]
 
         self.initial_weights = weights
+        kwargs['lr_scale'] = [lr_scale_w, lr_scale_b]
+        kwargs['param_names'] = [layer_name + "_W", layer_name + "_b"]
+
         super(Convolution2D, self).__init__(**kwargs)
 
     def build(self):

@@ -360,7 +360,7 @@ class LSTM(Recurrent):
                 http://deeplearning.cs.cmu.edu/pdfs/Hochreiter97_lstm.pdf
             Learning to forget: Continual prediction with LSTM
                 http://www.mitpressjournals.org/doi/pdf/10.1162/089976600300015015
-            Supervised sequence labelling with recurrent neural networks
+            Supervised sequence labelling with recurrent neural network_templates
                 http://www.cs.toronto.edu/~graves/preprint.pdf
     '''
     def __init__(self, output_dim,

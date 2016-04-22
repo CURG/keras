@@ -24,6 +24,8 @@ class Sequential(Layer):
         self.regularizers = []
         self.constraints = []
         self.updates = []
+        self.lr_scale = []
+        self.param_names = []
 
         for layer in layers:
             self.add(layer)
@@ -38,8 +40,10 @@ class Sequential(Layer):
             if not hasattr(self.layers[0], 'input'):
                 self.set_input()
 
-        params, regularizers, constraints, updates = layer.get_params()
+        params, regularizers, constraints, updates, lr_scale, param_names = layer.get_params()
+        self.lr_scale+= lr_scale
         self.params += params
+        self.param_names += param_names
         self.regularizers += regularizers
         self.constraints += constraints
         self.updates += updates
@@ -220,8 +224,10 @@ class Graph(Layer):
                                  'merge_mode': merge_mode,
                                  'concat_axis': concat_axis,
                                  'create_output': create_output})
-        params, regularizers, constraints, updates = layer.get_params()
+        params, regularizers, constraints, updates, lr_scale, param_names = layer.get_params()
+        self.lr_scale += lr_scale
         self.params += params
+        self.param_names += param_names
         self.regularizers += regularizers
         self.constraints += constraints
         self.updates += updates

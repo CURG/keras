@@ -14,7 +14,7 @@ import sys
     starts sounding coherent.
 
     It is recommended to run this script on GPU, as recurrent
-    networks are quite computationally intensive.
+    network_templates are quite computationally intensive.
 
     If you try this script on new data, make sure your corpus
     has at least ~100k characters. ~1M is better.

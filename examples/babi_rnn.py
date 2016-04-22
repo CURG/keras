@@ -15,7 +15,7 @@ from keras.models import Sequential
 from keras.preprocessing.sequence import pad_sequences
 
 '''
-Trains two recurrent neural networks based upon a story and a question.
+Trains two recurrent neural network_templates based upon a story and a question.
 The resulting merged vector is then queried to answer a range of bAbI tasks.
 
 The results are comparable to those for an LSTM model provided in Weston et al.:
@@ -67,8 +67,8 @@ of only 1000. 1000 was used in order to be comparable to the original paper.
 
 - The length and noise (i.e. 'useless' story components) impact the ability for
 LSTMs / GRUs to provide the correct answer. Given only the supporting facts,
-these RNNs can achieve 100% accuracy on many tasks. Memory networks and neural
-networks that use attentional processes can efficiently search through this
+these RNNs can achieve 100% accuracy on many tasks. Memory network_templates and neural
+network_templates that use attentional processes can efficiently search through this
 noise to find the relevant statements, improving performance substantially.
 This becomes especially obvious on QA2 and QA3, both far longer than QA1.
 '''

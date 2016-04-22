@@ -15,6 +15,8 @@ def get_fans(shape):
 def uniform(shape, scale=0.05):
     return sharedX(np.random.uniform(low=-scale, high=scale, size=shape))
 
+def tiny_uniform(shape, scale=0.0005):
+    return sharedX(np.random.uniform(low=-scale, high=scale, size=shape))
 
 def normal(shape, scale=0.05):
     return sharedX(np.random.randn(*shape) * scale)
@@ -40,6 +42,12 @@ def glorot_normal(shape):
 def glorot_uniform(shape):
     fan_in, fan_out = get_fans(shape)
     s = np.sqrt(6. / (fan_in + fan_out))
+    return uniform(shape, s)
+
+
+def glorot_uniform_small(shape):
+    fan_in, fan_out = get_fans(shape)
+    s = np.sqrt(1. / (fan_in + fan_out))
     return uniform(shape, s)
 
 

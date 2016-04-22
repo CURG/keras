@@ -21,7 +21,7 @@ Input may optionally be inverted, shown to increase performance in many tasks in
 http://arxiv.org/abs/1410.4615
 and
 "Sequence to Sequence Learning with Neural Networks"
-http://papers.nips.cc/paper/5346-sequence-to-sequence-learning-with-neural-networks.pdf
+http://papers.nips.cc/paper/5346-sequence-to-sequence-learning-with-neural-network_templates.pdf
 Theoretically it introduces shorter term dependencies between source and target.
 
 Two digits inverted:

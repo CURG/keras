@@ -36,24 +36,23 @@ class BatchNormalization(Layer):
         self.running_mean = shared_zeros(input_shape)
         self.running_std = shared_ones((input_shape))
 
-        # initialize self.updates: batch mean/std computation
-        X = self.get_input(train=True)
-        m = X.mean(axis=0)
-        std = T.mean((X - m) ** 2 + self.epsilon, axis=0) ** 0.5
-        mean_update = self.momentum * self.running_mean + (1-self.momentum) * m
-        std_update = self.momentum * self.running_std + (1-self.momentum) * std
-        self.updates = [(self.running_mean, mean_update), (self.running_std, std_update)]
-
         if self.initial_weights is not None:
             self.set_weights(self.initial_weights)
             del self.initial_weights
 
     def get_weights(self):
+        print('GET WEIGHTS')
+        # import IPython
+        # IPython.embed()
         return super(BatchNormalization, self).get_weights() + [self.running_mean.get_value(), self.running_std.get_value()]
 
     def set_weights(self, weights):
+        print('SET WEIGHTS')
         self.running_mean.set_value(floatX(weights[-2]))
         self.running_std.set_value(floatX(weights[-1]))
+        # import IPython
+        # IPython.embed()
+
         super(BatchNormalization, self).set_weights(weights[:-2])
 
     def get_output(self, train):
@@ -63,8 +62,11 @@ class BatchNormalization(Layer):
             X_normed = (X - self.running_mean) / (self.running_std + self.epsilon)
 
         elif self.mode == 1:
-            m = X.mean(axis=-1, keepdims=True)
-            std = X.std(axis=-1, keepdims=True)
+            m = X.mean(axis=0)
+            std = T.mean((X - m) ** 2 + self.epsilon, axis=0) ** 0.5
+            mean_update = self.momentum * self.running_mean + (1-self.momentum) * m
+            std_update = self.momentum * self.running_std + (1-self.momentum) * std
+            self.updates = [(self.running_mean, mean_update), (self.running_std, std_update)]
             X_normed = (X - m) / (std + self.epsilon)
 
         out = self.gamma * X_normed + self.beta

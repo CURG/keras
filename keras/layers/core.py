@@ -20,11 +20,22 @@ from six.moves import zip
 class Layer(object):
     def __init__(self, **kwargs):
         for kwarg in kwargs:
-            assert kwarg in {'input_shape'}, "Keyword argument not understood: " + kwarg
+            assert kwarg in {'input_shape', 'lr_scale', "param_names"}, "Keyword argument not understood: " + kwarg
         if 'input_shape' in kwargs:
             self.set_input_shape(kwargs['input_shape'])
+
+        if 'lr_scale' in kwargs:
+            self.lr_scale = kwargs['lr_scale']
+        else:
+             self.lr_scale = []
+
         if not hasattr(self, 'params'):
             self.params = []
+
+        if 'param_names' in kwargs:
+            self.param_names = kwargs['param_names']
+        else:
+             self.param_names = []
 
     def set_previous(self, layer, connection_map={}):
         assert self.nb_input == layer.nb_output == 1, "Cannot connect layers: input count and output count should be 1."
@@ -158,7 +169,7 @@ class Layer(object):
         if hasattr(self, 'updates') and self.updates:
             updates += self.updates
 
-        return self.params, regularizers, consts, updates
+        return self.params, regularizers, consts, updates, self.lr_scale,  self.param_names
 
     def set_name(self, name):
         for i in range(len(self.params)):
@@ -276,15 +287,22 @@ class Merge(Layer):
         self.regularizers = []
         self.constraints = []
         self.updates = []
+        self.lr_scale = []
+
+        self.param_names = []
+
         for l in self.layers:
-            params, regs, consts, updates = l.get_params()
+            params, regs, consts, updates, lr_scale, param_names = l.get_params()
+
             self.regularizers += regs
             self.updates += updates
             # params and constraints have the same size
-            for p, c in zip(params, consts):
+            for p, c, lr, param_name in zip(params, consts, lr_scale, param_names):
                 if p not in self.params:
                     self.params.append(p)
+                    self.param_names.append(param_name)
                     self.constraints.append(c)
+                    self.lr_scale.append(lr)
 
     @property
     def output_shape(self):
@@ -298,7 +316,7 @@ class Merge(Layer):
             return tuple(output_shape)
 
     def get_params(self):
-        return self.params, self.regularizers, self.constraints, self.updates
+        return self.params, self.regularizers, self.constraints, self.updates, self.lr_scale, self.param_names
 
     def get_output(self, train=False):
         if self.mode == 'sum' or self.mode == 'ave':
@@ -530,7 +548,7 @@ class Dense(Layer):
 
     def __init__(self, output_dim, init='glorot_uniform', activation='linear', weights=None,
                  W_regularizer=None, b_regularizer=None, activity_regularizer=None,
-                 W_constraint=None, b_constraint=None, input_dim=None, **kwargs):
+                 W_constraint=None, b_constraint=None, input_dim=None, lr_scale_w=1.0, lr_scale_b=1.0, layer_name="Dense", **kwargs):
         self.init = initializations.get(init)
         self.activation = activations.get(activation)
         self.output_dim = output_dim
@@ -548,6 +566,10 @@ class Dense(Layer):
         self.input_dim = input_dim
         if self.input_dim:
             kwargs['input_shape'] = (self.input_dim,)
+
+        kwargs['lr_scale'] = [lr_scale_w, lr_scale_b]
+        kwargs['param_names'] = [layer_name + "_W", layer_name + "_b"]
+
         super(Dense, self).__init__(**kwargs)
 
     def build(self):

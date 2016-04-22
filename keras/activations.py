@@ -19,6 +19,8 @@ def softplus(x):
 def relu(x):
     return T.nnet.relu(x)
 
+def LeakyReLU(x):
+    return T.nnet.relu(x, 0.3)
 
 def tanh(x):
     return T.tanh(x)
